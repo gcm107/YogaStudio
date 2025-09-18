@@ -1,6 +1,8 @@
 # YogaStudio
 MERN-based full stack application for Yoga H'om studio.
 
+The app can be opened <a href="https://yogastudio-6552649465ad.herokuapp.com/">here.</a> 
+
 ## Packages 
 npm install express mongoose cors dotenv
 
@@ -11,4 +13,9 @@ Focusing on two use cases:
 - Manager adding classes.
     - starting with the schema for the db
 
-`Backend will be handled before front end`
+
+Part 1 front end:
+
+<img src="design/frontend.png">
+
+
