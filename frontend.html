@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Yoga H'om Studio</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <h1>Yoga H'om Studio Management</h1>
+    
+    <div class="tabs">
+        <button id="instructorTab" class="active" onclick="showTab('instructor')">Add Instructor</button>
+        <button id="classTab" onclick="showTab('class')">Add Class</button>
+    </div>
+
+    <div id="message"></div>
+
+    <!-- adding an instructor -->
+    <div id="instructorForm" class="form-container">
+        <h2>Add New Instructor</h2>
+        <form onsubmit="addInstructor(event)">
+            <input type="text" name="firstName" placeholder="First Name" required>
+            <input type="text" name="lastName" placeholder="Last Name" required>
+            <input type="text" name="address" placeholder="Address" required>
+            <input type="tel" name="phone" placeholder="Phone (123-456-7890)" required>
+            <input type="email" name="email" placeholder="Email" required>
+            <!-- getting the communication method -->
+            <select name="preferredCommunication" required>
+                <option value="">Select Communication Method...</option>
+                <option value="email">Email</option>
+                <option value="phone">Phone</option>
+            </select>
+            <button type="submit" class="submit-btn">Add Instructor</button>
+        </form>
+    </div>
+
+    <!-- adding a class -->
+    <div id="classForm" class="form-container hidden">
+        <h2>Add New Class</h2>
+        <form onsubmit="addClass(event)">
+            <select name="I_ID" id="instructorSelect" required>
+                <option value="">Choose Instructor...</option>
+            </select>
+            <select name="day" required>
+                <option value="">Select Day...</option>
+                <option value="Monday">Monday</option>
+                <option value="Tuesday">Tuesday</option>
+                <option value="Wednesday">Wednesday</option>
+                <option value="Thursday">Thursday</option>
+                <option value="Friday">Friday</option>
+                <option value="Saturday">Saturday</option>
+                <option value="Sunday">Sunday</option>
+            </select>
+
+            <select name="time" required>
+                <option value="">Select Time...</option>
+                <option value="9:00 AM">9:00 AM</option>
+                <option value="10:00 AM">10:00 AM</option>
+                <option value="11:00 AM">11:00 AM</option>
+                <option value="2:00 PM">2:00 PM</option>
+                <option value="3:00 PM">3:00 PM</option>
+                <option value="6:00 PM">6:00 PM</option>
+                <option value="7:00 PM">7:00 PM</option>
+            </select>
+
+            <select name="classType" required>
+                <option value="General">General</option>
+                <option value="Special">Special</option>
+            </select>
+            <input type="number" name="payRate" placeholder="Pay Rate ($)" step="0.01" required>
+            <textarea name="specialClassDescription" placeholder="Special class description (if Special type)" rows="3"></textarea>
+            <button type="submit" class="submit-btn">Add Class</button>
+        </form>
+    </div>
+
+    <!--  functions for frontend -->
+    <script>
+        // heroku app 
+        const API_URL = 'https://yogastudio-6552649465ad.herokuapp.com/';
+        
+        //  show or hide the tasb
+        function showTab(tab) {
+            if (tab === 'instructor') {
+                document.getElementById('instructorForm').classList.remove('hidden');
+                document.getElementById('classForm').classList.add('hidden');
+                document.getElementById('instructorTab').classList.add('active');
+                document.getElementById('classTab').classList.remove('active');
+            } else {
+                document.getElementById('instructorForm').classList.add('hidden');
+                document.getElementById('classForm').classList.remove('hidden');
+                document.getElementById('instructorTab').classList.remove('active');
+                document.getElementById('classTab').classList.add('active');
+                loadInstructors(); // Load instructors when switching to class tab
+            }
+        }
+
+        // simple function to show message
+        function showMessage(text, type) {
+            const messageDiv = document.getElementById('message');
+            messageDiv.innerHTML = text;
+            messageDiv.className = 'message ' + type;
+        }
+
+        // function to add an instructor
+        async function addInstructor(event) {
+
+            // cant submit default vals
+            event.preventDefault();
+            const form = event.target;
+            const formData = new FormData(form);
+            
+            try {
+                const response = await fetch(`${API_URL}/api/instructors`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+
+                        // getting the first name
+                        firstName: formData.get('firstName'),
+                        // getting the last name
+
+                        lastName: formData.get('lastName'),
+                        // getting the address
+                        address: formData.get('address'),
+                        // getting the phone
+
+                        phone: formData.get('phone'),
+                        email: formData.get('email'),
+                        preferredCommunication: formData.get('preferredCommunication')
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    showMessage(data.welcomeMessage, 'success');
+                    form.reset();
+                } else {
+                    showMessage(data.message, 'error');
+                }
+            } catch (error) {
+                showMessage('Whoops! Error adding instructor', 'error');
+            }
+        }
+
+        // function to add a class
+        async function addClass(event) {
+            event.preventDefault();
+            const form = event.target;
+            const formData = new FormData(form);
+            
+            try {
+                const response = await fetch(`${API_URL}/api/classes`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+
+                        // gettomg instructor id
+                        I_ID: formData.get('I_ID'),
+
+                        // getting the day
+                        day: formData.get('day'),
+                        time: formData.get('time'),
+                        classType: formData.get('classType'),
+                        specialClassDescription: formData.get('specialClassDescription'),
+                        payRate: parseFloat(formData.get('payRate'))
+                    })
+                });
+                
+                // getting the data
+                const data = await response.json();
+                
+                if (response.ok) {
+                    showMessage( data.confirmationMessage, 'success');
+                    form.reset();
+                } else {
+                    showMessage(data.message, 'error');
+                }
+            } catch (error) {
+                showMessage('Error adding class', 'error');
+            }
+        }
+
+        // getts the instructors for the dropdown
+        async function loadInstructors() {
+            try {
+                const response = await fetch(`${API_URL}/api/instructors`);
+                const instructors = await response.json();
+                
+                const select = document.getElementById('instructorSelect');
+                select.innerHTML = '<option value="">Choose Instructor...</option>';
+                
+                instructors.forEach(instructor => {
+                    const option = document.createElement('option');
+
+                    // adding the instructor to the dropdown
+                    option.value = instructor.I_ID;
+                    option.textContent = `${instructor.I_ID} - ${instructor.firstName} ${instructor.lastName}`;
+
+                    // adding the instructor to the dropdown
+                    select.appendChild(option);
+                });
+            } catch (error) {
+                console.error('Error loading instructors');
+            }
+        }
+
+        // loadsd when the page does
+        loadInstructors();
+    </script>
+</body>
+</html>
