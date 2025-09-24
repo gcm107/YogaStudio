@@ -144,3 +144,7 @@ instructions/
 #doc files
 docs/
 backend/package-lock.json
+
+# ds store files
+.DS_Store
+
