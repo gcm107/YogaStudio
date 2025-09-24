@@ -23,6 +23,9 @@ npm install express mongoose cors dotenv
 
 
 ## Part 2:
+### Entity Relationship Diagram:
+<img src="design/partTwo_full_DB_Schema.svg">
+
 
 
 
