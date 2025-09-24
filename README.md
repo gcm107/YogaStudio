@@ -6,16 +6,23 @@ The app can be opened <a href="https://yogastudio-6552649465ad.herokuapp.com/">h
 ## Packages 
 npm install express mongoose cors dotenv
 
+
 ## Part 1:
-Focusing on two use cases:
-- Manager adding instructors
-    - starting with the schema for the db
-- Manager adding classes.
-    - starting with the schema for the db
+*Focusing on two use cases:*
+- *Manager adding instructors*
+- *Manager adding classes.*
+---
+### Entity Relationship Diagram:
+<img src="design/partOne_mongo.png">
 
 
-Part 1 front end:
+
+### Front end:
 
 <img src="design/frontend.png">
+
+
+## Part 2:
+
 
 
